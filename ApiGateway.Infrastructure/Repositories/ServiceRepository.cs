@@ -1,5 +1,7 @@
-﻿using ApiGateway.Domain.Entities;
+﻿using ApiGateway.Domain.Common;
+using ApiGateway.Domain.Entities;
 using ApiGateway.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +12,34 @@ namespace ApiGateway.Infrastructure.Repositories
 {
     public class ServiceRepository : IServiceRepository
     {
-        public Task<Service> CreateService(Service service)
+        private readonly ApiGatewayContext _context;
+
+        public IUnitOfWork UnitOfWork => _context;
+        public ServiceRepository(ApiGatewayContext context)
         {
-            throw new NotImplementedException();
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+        public async Task<Service> CreateServiceAsync(Service service)
+        {
+            var result = await _context.services.AddAsync(service);
+            return result.Entity;
         }
 
-        public Task<Service> GetService(string id)
+        public async Task<Service> GetServiceAsync(string id)
         {
-            throw new NotImplementedException();
+            var service = await _context.services.FindAsync(id);
+            return service;
         }
 
-        public Task<bool> UpdateService(Service service)
+        public void UpdateService(Service service)
         {
-            throw new NotImplementedException();
+             _context.Entry(service).State = EntityState.Modified;
+
+        }
+
+        public Service AddService(Service service)
+        {
+            return _context.services.Add(service).Entity;
         }
     }
 }

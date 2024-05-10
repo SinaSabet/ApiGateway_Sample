@@ -1,4 +1,5 @@
-﻿using ApiGateway.Domain.Entities;
+﻿using ApiGateway.Domain.Common;
+using ApiGateway.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace ApiGateway.Domain.Repositories
 {
     public interface IServiceRepository
     {
-        Task<Service> GetService(string id);
-        Task<Service> CreateService(Service service);
-        Task<bool> UpdateService(Service service);
+        IUnitOfWork UnitOfWork { get; }
+
+        Task<Service> GetServiceAsync(string id);
+        Service AddService(Service service);
+        void UpdateService(Service service);
     }
 }
